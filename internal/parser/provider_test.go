@@ -163,6 +163,7 @@ func TestStoredSourceHintCapabilitiesMatchConsumers(t *testing.T) {
 		AgentZCode:     true,
 		AgentZed:       true,
 		AgentCline:     true,
+		AgentKandev:    true,
 	}
 
 	for _, factory := range ProviderFactories() {

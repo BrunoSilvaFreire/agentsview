@@ -73,6 +73,7 @@ describe("KNOWN_AGENTS", () => {
       "freebuff",
       "crush",
       "muse",
+      "kandev",
     ]);
   });
 
@@ -181,6 +182,7 @@ describe("agentLabel", () => {
     expect(agentLabel("opencodereview")).toBe("Open Code Review");
     expect(agentLabel("crush")).toBe("Charm Crush");
     expect(agentLabel("muse")).toBe("Muse Code");
+    expect(agentLabel("kandev")).toBe("Kandev");
   });
 
   it("capitalizes simple agent names", () => {

@@ -94,6 +94,7 @@ const (
 	AgentFreebuff       AgentType = "freebuff"
 	AgentCrush          AgentType = "crush"
 	AgentMuse           AgentType = "muse"
+	AgentKandev         AgentType = "kandev"
 )
 
 const AgentDeepSeekHarness AgentType = "deepseek-harness"
@@ -1248,6 +1249,23 @@ var Registry = []AgentDef{
 		DefaultDirs:       []string{".local/share/muse/sessions"},
 		IDPrefix:          "muse:",
 		FileBased:         true,
+	},
+	{
+		// Kandev keeps every task session in its application database at
+		// ~/.kandev/data/kandev.db. The same file holds auth tokens and
+		// plugin state, so the provider reads it read-only and only ever
+		// selects named columns.
+		Type:        AgentKandev,
+		DisplayName: "Kandev",
+		EnvVar:      "KANDEV_DIR",
+		ConfigKey:   "kandev_dirs",
+		DefaultDirs: []string{".kandev"},
+		IDPrefix:    "kandev:",
+		FileBased:   false,
+		Usage: UsageCapabilities{
+			NoPerMessageTokenData: true,
+		},
+		PeriodicReconcile: true,
 	},
 }
 

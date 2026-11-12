@@ -6068,6 +6068,40 @@ schemas keep their existing ordering behavior.
   not been observed in a published log and are not rendered.
   `session-index.db` is not read.
 
+## Kandev (`kandev`)
+
+- **Format:** Kandev persists each task session in the application database at
+  `~/.kandev/data/kandev.db` (override with `KANDEV_DIR`). The same SQLite file
+  also holds workspaces, auth tokens, and plugin state, so Agentsview opens it
+  read-only and selects named columns only. A session is one `task_sessions`
+  row identified by `id`; `task_id` joins `tasks` for the title and
+  description. Conversation rows live in `task_session_messages`, ordered by
+  `created_at` then `id`, each carrying `turn_id`, `author_type`
+  (`user`/`agent`), `type`, `content`, and a `metadata` JSON object.
+  `author_type` separates user and agent turns. `type` values include
+  `message`, `thinking`, `tool_call`, `tool_execute`, `tool_read`,
+  `tool_edit`, `tool_search`, `script_execution`, `status`, `todo`, and
+  permission or clarification requests. Tool rows carry
+  `metadata.normalized.kind` plus a payload keyed by that kind (for example
+  `shell_exec.command`, `shell_exec.output`, `read_file.file_path`,
+  `read_file.output.content`, `modify_file.mutations`) and a
+  `metadata.tool_call_id`; their output is attached to the call as a tool
+  result. `thinking` rows keep the readable reasoning in
+  `metadata.thinking`. Bookkeeping rows (`status`, `todo`,
+  `script_execution`) are dropped because they carry boot logs rather than
+  conversation. Session token totals are read from `task_sessions.tokens_in`,
+  `tokens_cached_in`, and `tokens_out` when present.
+- **Evidence:** `no-public-source`.
+- **Upstream:** Kandev is a closed-source product. The vendor documentation,
+  public repositories, and code search for the session format, persistence
+  model, and token usage/cost accounting were searched 2026-11-12 without a
+  published schema. The layout above is from read-only inspection of an
+  installed producer database.
+- **Usage and cost:** Session-level input, cached-input, and output token
+  totals are persisted on `task_sessions`; per-message usage is not recorded,
+  so the provider marks the agent as lacking per-message token data.
+- **Agentsview:** internal/parser/kandev.go.
+
 [evener-source-1]: https://github.com/prime-radiant-inc/evener/blob/da7c06396c9848abfae362dcffce3861a6a0c95a/agent/transcript/transcript.go
 [evener-source-2]: https://github.com/prime-radiant-inc/evener/blob/da7c06396c9848abfae362dcffce3861a6a0c95a/agent/schema/turn.go
 [evener-source-3]: https://github.com/prime-radiant-inc/evener/blob/da7c06396c9848abfae362dcffce3861a6a0c95a/llm/types.go
